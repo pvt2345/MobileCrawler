@@ -22,23 +22,46 @@ class Mobile(scrapy.Spider):
                 yield scrapy.Request(url=next_page, callback=self.parse_item)
 
     def parse_item(self, response):
-        article = {}
-        keys = response.css('div.fs-tsright li label::text').extract()
-        texts = response.css('div.fs-tsright li span::text').extract()
-        article['Model: '] = response.css('div.f-wrap ul.fs-breadcrumb li.active::text').extract()
-        article['Hãng: '] = response.css('div.f-wrap ul.fs-breadcrumb a::text').extract()[2].strip()
-        article['Giá: '] = response.xpath('/html/body/section/div/div[1]/div[2]/div[2]/div[1]/p/text()').extract()[
-            0].strip()
-        for i in range(len(keys)):
-            article[keys[i]] = texts[i]
-        csv_columns = ['Model', 'Hãng', 'Giá', 'Màn hình', 'Camera trước', 'Camera sau', 'RAM', 'Bộ nhớ trong', 'CPU',
-                       'GPU', 'Dung lương pin', 'Hệ điều hành', 'Thẻ sim']
-        csv_file = "Mobile.csv"
         try:
-            with open(csv_file, 'w') as csvfile:
-                writer = csv.DictWriter(csvfile, fieldnames= csv_columns)
-                writer.writeheader()
-                for data in article:
-                    writer.writerow(data)
-        except IOError:
-            print("I/O error")
+            article = {}
+            # keys = response.css('div.fs-tsright li label::text').extract()
+            texts = response.css('div.fs-tsright li span::text').extract()
+            article['name'] = response.css('div.f-wrap ul.fs-breadcrumb li.active::text').extract()
+            article['brand'] = response.css('div.f-wrap ul.fs-breadcrumb a::text').extract()[2].strip()
+            try:
+                price  = response.xpath('/html/body/section/div/div[1]/div[2]/div[2]/div[1]/p/text()').extract()[0].strip()
+                article['price'] = int(price.replace('.',''))
+            except:
+                price = response.xpath('/html/body/section/div/div[1]/div[2]/div[2]/div[1]/ul/li[2]/label/span/strong/text()').extract_first()[:-1]
+                article['price'] = int(price.replace('.', ''))
+
+            article['screen'] = texts[0]
+            article['front_camera'] = texts[1]
+            article['behind_camera'] = texts[2]
+            article['ram'] = texts[3]
+            article['storage'] = texts[4]
+            article['CPU'] = texts[5]
+            article['GPU'] = texts[6]
+            article['battery'] = texts[7]
+            article['OS'] = texts[8]
+            article['SIM'] = texts[9]
+
+            yield article
+        except:
+            error_url = response.url
+            yield {'error_url' : error_url}
+
+
+        # for i in range(len(keys)):
+        #     article[keys[i]] = texts[i]
+        # csv_columns = ['Model', 'Hãng', 'Giá', 'Màn hình', 'Camera trước', 'Camera sau', 'RAM', 'Bộ nhớ trong', 'CPU',
+        #                'GPU', 'Dung lương pin', 'Hệ điều hành', 'Thẻ sim']
+        # csv_file = "Mobile.csv"
+        # try:
+        #     with open(csv_file, 'w') as csvfile:
+        #         writer = csv.DictWriter(csvfile, fieldnames= csv_columns)
+        #         writer.writeheader()
+        #         for data in article:
+        #             writer.writerow(data)
+        # except IOError:
+        #     print("I/O error")
