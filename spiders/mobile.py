@@ -24,9 +24,7 @@ class Mobile(scrapy.Spider):
     def parse_item(self, response):
         try:
             article = {}
-            # keys = response.css('div.fs-tsright li label::text').extract()
-            # texts = response.css('div.fs-tsright li span::text').extract()
-            article['name'] = response.css('div.f-wrap ul.fs-breadcrumb li.active::text').extract()
+            article['name'] = response.css('div.f-wrap ul.fs-breadcrumb li.active::text').extract_first()
             article['brand'] = response.css('div.f-wrap ul.fs-breadcrumb a::text').extract()[2].strip()
             try:
                 price  = response.xpath('/html/body/section/div/div[1]/div[2]/div[2]/div[1]/p/text()').extract()[0].strip()
