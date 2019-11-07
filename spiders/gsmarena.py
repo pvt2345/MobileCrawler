@@ -32,8 +32,8 @@ class Mobiles(scrapy.Spider):
                         article['models'] = ele.css('td.nfo::text').extract_first()
                     if ele.css('td.ttl a::text').extract_first() == 'Internal':
                         s = ele.css('td.nfo::text').extract_first().split(",")
-                        info_ram = {}
-                        info_storage = {}
+                        info_ram = []
+                        info_storage = []
                         for i in range(len(s)):
                             info_memory = s[i].split()
                             info_ram.append(info_memory[1])
