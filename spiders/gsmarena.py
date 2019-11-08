@@ -11,16 +11,24 @@ class Mobiles(scrapy.Spider):
         for url in self.start_urls:
             yield scrapy.Request(url=url, callback=self.parse_brand)
 
-
     def parse_brand(self, response):
         for item in response.css('div.brandmenu-v2 li'):
             if item is not None:
                 next_url = item.css('a::attr(href)').extract_first()
                 next_url = self.domain + self.gsm_domain + next_url
                 brand = item.css('a::text').extract_first()
-    #             next_page = response.urljoin(next_url)
-                request = scrapy.Request(url=next_url, callback=self.parse_item)
+                #             next_page = response.urljoin(next_url)
+                request = scrapy.Request(url=next_url, callback=self.parse_list_item)
                 request.meta['brand'] = brand
+                yield request
+
+    def parse_list_item(self, response):
+        for item in response.css('div.makers li'):
+            if item is not None:
+                next_url = item.css('a::attr(href)').extract_first()
+                next_url = self.domain + self.gsm_domain + next_url
+                request = scrapy.Request(url=next_url, callback=self.parse_item)
+                request.meta['brand'] = response.meta['brand']
                 yield request
 
     def parse_item(self, response):
