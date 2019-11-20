@@ -1,6 +1,5 @@
 import scrapy
 
-
 class Mobiles(scrapy.Spider):
     name = 'gsmarena'
     start_urls = ['http://webcache.googleusercontent.com/search?q=cache:https://www.gsmarena.com/']
