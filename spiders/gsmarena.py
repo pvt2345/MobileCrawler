@@ -19,10 +19,8 @@ class Mobiles(scrapy.Spider):
                 request = scrapy.Request(url=next_url, callback=self.parse_list_item)
                 request.meta['brand'] = brand
                 yield request
-            if response.css('a.pages-next::attr(href)').extract_first() != '#1':
-                next_page = response.css('a.pages-next::attr(href)').extract_first()
-                next_page = self.domain + self.gsm_domain + next_page
-                yield scrapy.Request(url=next_page, callback=self.parse_brand)
+
+
 
     def parse_list_item(self, response):
         for item in response.css('div.makers li'):
@@ -32,6 +30,11 @@ class Mobiles(scrapy.Spider):
                 request = scrapy.Request(url=next_url, callback=self.parse_item)
                 request.meta['brand'] = response.meta['brand']
                 yield request
+
+        if response.css('a.pages-next::attr(href)').extract_first() != '#1':
+            next_page = response.css('a.pages-next::attr(href)').extract_first()
+            next_page = self.domain + self.gsm_domain + next_page
+            yield scrapy.Request(url=next_page, callback=self.parse_list_item)
 
     def parse_item(self, response):
         try:
