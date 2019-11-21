@@ -50,7 +50,7 @@ class Mobiles(scrapy.Spider):
                         info_ram = []
                         info_storage = []
                         info_rom = []
-                        if 'ROM' not in s[1]:
+                        if 'ROM' not in s[0]:
                             for i in range(len(s)):
                                 info_memory = s[i].split()
                                 info_ram.append(info_memory[1])
@@ -58,12 +58,8 @@ class Mobiles(scrapy.Spider):
                             article['ram'] = info_ram
                             article['storage'] = info_storage
                         else:
-                            for i in range(len(s)):
-                                info_memory = s[i].split()
-                                info_ram.append(info_memory[1])
-                                info_rom.append(info_memory[0])
-                            article['ram'] = info_ram
-                            article['storage'] = info_rom
+                            article['ram'] = s[1].split()[0]
+                            article['rom'] = s[0].split()[0]
                     if ele.css('td.ttl a::text').extract_first() == 'Type':
                         article['screen'] = ele.css('td.nfo::text').extract_first()
                     if ele.css('td.ttl a::text').extract_first() == 'Size':
@@ -72,7 +68,7 @@ class Mobiles(scrapy.Spider):
                         article['sim'] = ele.css('td.nfo::text').extract_first()
                     if ele.css('td.ttl a::text').extract_first() == 'OS':
                         article['os'] = ele.css('td.nfo::text').extract_first()
-                        
+
                     main_camera = response.css('td.nfo[data-spec="cam1modules"]::text').extract()
                     main_camera = [item.strip() for item in main_camera]
                     article['behind_camera'] = main_camera
