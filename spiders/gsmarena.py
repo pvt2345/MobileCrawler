@@ -1,5 +1,6 @@
 import scrapy
 
+
 class Mobiles(scrapy.Spider):
     name = 'gsmarena'
     start_urls = ['http://webcache.googleusercontent.com/search?q=cache:https://www.gsmarena.com/']
@@ -20,7 +21,6 @@ class Mobiles(scrapy.Spider):
                 request.meta['brand'] = brand
                 yield request
 
-
     def parse_list_item(self, response):
         for item in response.css('div.makers li'):
             if item is not None:
@@ -38,7 +38,7 @@ class Mobiles(scrapy.Spider):
         try:
             article = {}
             article['brand'] = response.meta['brand']
-            article['name'] = response.css('h1.specs-phone-name-title::text').extract_first()
+            article['name'] = response.css('h1.specs-phone-name-title::text').extract_first().split(' ', 1)[1]
             for item in response.css('div#specs-list table'):
                 for ele in item.css('tr'):
                     if ele.css('td.ttl a::text').extract_first() == 'Models':
@@ -76,7 +76,6 @@ class Mobiles(scrapy.Spider):
                     selfie_camera = response.css('td.nfo[data-spec="cam2modules"]::text').extract()
                     selfie_camera = [item.strip() for item in selfie_camera]
                     article['front_camera'] = selfie_camera
-
 
             yield article
 
